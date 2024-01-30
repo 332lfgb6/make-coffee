@@ -14,25 +14,31 @@ export class BookService {
   ) {}
 
   async create(createBookDto: CreateBookDto) {
-    const session = await this.connection.startSession(); // 开启会话
-    session.startTransaction(); // 开始事务
+    const session = await this.connection.startSession(); // start session
+    session.startTransaction(); // start transaction
     try {
       const book = new this.bookModel(createBookDto);
       const coffee = new this.coffeeModel({
-        name: '七七咖啡',
-        brand: '七七',
-        flavors: ['草莓', '葡萄'],
+        name: 'dd coffee',
+        brand: 'dd',
+        flavors: ['apple', 'orange'],
       });
+      // ×：No newly created books and coffees were found in the database,
+      // but this code should be successful in creating books and coffee
+      // await book.save({ session });
+      // await coffee.save({ session });
+
+      // √: after removing { session }, I found the newly created book
+      // and coffee in the database, proving that the code I wrote was OK
       await book.save();
-      throw '7788';
       await coffee.save();
 
-      await session.commitTransaction(); // 提交事务
+      await session.commitTransaction(); // commit transaction
     } catch (error) {
-      await session.abortTransaction(); // 中断事务
+      await session.abortTransaction(); // abort transaction
     } finally {
-      session.endSession(); // 结束会话
-      return '创建书本和咖啡成功';
+      session.endSession(); // end session
+      return 'create a book and a coffee successfully.';
     }
   }
 }
